@@ -40,11 +40,11 @@ class ExecutorOutput:
     ):
         try:
             self.stdout = stdout.decode("utf=8", "backslashreplace")
-        except AttributeError as e:
+        except AttributeError:
             self.stdout = stdout
         try:
             self.stderr = stderr.decode("utf=8", "backslashreplace")
-        except AttributeError as e:
+        except AttributeError:
             self.stderr = stderr
         self.exit_code = exit_code
         self.error_message = desc_err
@@ -132,7 +132,8 @@ class ExecutorError(Exception):
 
 # Executor class
 class LocalExecutor:
-    """
+    """Represent a json descriptor of a tool.
+
     This class represents a json descriptor of a tool, and can execute
     various tasks related to it. It is constructed first via an
     input json descriptor file, which is held in the desc_dict field.
@@ -234,7 +235,8 @@ class LocalExecutor:
     # Attempt local execution of the command line
     # generated from the input values
     def execute(self, mount_strings):
-        """
+        """Run the generated command line.
+
         The execute method runs the generated command line
         (from either generateRandomParams or readInput)
         If docker is specified, it will attempt to use it, instead
@@ -246,7 +248,7 @@ class LocalExecutor:
         conType, conImage = con.get("type"), (
             con.get("image") if not self.noContainer else None
         )
-        conIndex = con.get("index")
+        _ = con.get("index")
         conOpts = con.get("container-opts")
         conIsPresent = conImage is not None
         # Export environment variables,
@@ -457,7 +459,7 @@ class LocalExecutor:
         output_files_dict = {}
         all_files = evaluateEngine(self, "output-files")
         required_files = evaluateEngine(self, "output-files/optional=False")
-        optional_files = evaluateEngine(self, "output-files/optional=True")
+        _ = evaluateEngine(self, "output-files/optional=True")
         for f in all_files.keys():
             file_name = all_files[f]
             fd = FileDescription(f, file_name, False)
@@ -1070,7 +1072,7 @@ class LocalExecutor:
                 for r in result:
                     self.in_dict[r["id"]] = makeParam(r)
                     # Check for mutex between in_dict and last in param
-                    for group, mbs in [
+                    for _, mbs in [
                         (x, x["members"])
                         for x in self.groups
                         if x.get("mutually-exclusive")
@@ -1090,12 +1092,12 @@ class LocalExecutor:
     # This fills the in_dict with random values, validates the input,
     # and generates the appropriate command line
     def generateRandomParams(self, generateCmdLineFromInDict=False):
-        """
+        """Fill the in_dict field with randomly generated values.
+
         The generateRandomParams method fills the in_dict field
         with randomly generated values following the schema.
         It then generates command line strings based on these values
         """
-
         self.cmd_line = []
         # Set in_dict with random values
         self._randomFillInDict()
@@ -1123,7 +1125,8 @@ class LocalExecutor:
 
     # Read in parameter input file or string
     def readInput(self, infile):
-        """
+        """Set the in_dict field of the executor.
+
         The readInput method sets the in_dict field of the executor
         object, based on a fixed input.
         It then generates a command line based on the input.
@@ -1133,7 +1136,6 @@ class LocalExecutor:
         stringInput: a boolean as to whether the method has
         been given a string or a file.
         """
-
         # Quick check that the descriptor has already been read in
         assert self.desc_dict is not None
         self.in_dict = loadJson(infile)
@@ -1191,7 +1193,7 @@ class LocalExecutor:
         def escape_string(s):
             try:
                 from shlex import quote
-            except ImportError as e:
+            except ImportError:
                 from shlex import quote
             return quote(s)
 
@@ -1570,7 +1572,8 @@ class LocalExecutor:
         if match:
             if self.debug:
                 print_info(
-                    f"Unpublished descriptor match found in data cache as {match}"
+                    "Unpublished descriptor match found in data cache as "
+                    f"{match}"
                 )
             return match
         # Write descriptor to data cache and save return filename

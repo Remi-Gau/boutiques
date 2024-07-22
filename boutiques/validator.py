@@ -3,18 +3,13 @@
 import keyword
 import os.path as op
 import re
-from argparse import ArgumentParser
 
 import simplejson as json
 from jsonschema import ValidationError, validate
 
 from boutiques import __file__ as bfile
-from boutiques.logger import print_info, raise_error
-from boutiques.util.utils import (
-    conditionalExpFormat,
-    customSortDescriptorByKey,
-    loadJson,
-)
+from boutiques.logger import raise_error
+from boutiques.util.utils import conditionalExpFormat, customSortDescriptorByKey
 
 
 # An exception class specific to descriptors
@@ -24,9 +19,7 @@ class DescriptorValidationError(ValidationError):
 
 # Main validation module
 def validate_descriptor(descriptor, **kwargs):
-    """
-    Validates the Boutiques descriptor against the schema.
-    """
+    """Validate the Boutiques descriptor against the schema."""
     path, fil = op.split(bfile)
     schema_file = op.join(path, "schema", "descriptor.schema.json")
 
@@ -188,7 +181,7 @@ def validate_descriptor(descriptor, **kwargs):
                     for mid in inIds
                     if inById(mid)["value-key"] == key
                 ]
-                for idx, grp in enumerate(descriptor.get("groups")):
+                for _, grp in enumerate(descriptor.get("groups")):
                     mutex = grp.get("mutually-exclusive")
                     if set(grp["members"]) == set(mids) and not mutex:
                         errors += [msg_template.format(key)]
@@ -472,7 +465,7 @@ def validate_descriptor(descriptor, **kwargs):
                     ]
 
     # Verify groups
-    for idx, grpid in enumerate(grpIds):
+    for idx, _ in enumerate(grpIds):
         grp = descriptor["groups"][idx]
         # Verify group members must (exist in inputs, show up
         # once, only belong to single group)

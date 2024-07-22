@@ -86,7 +86,8 @@ class ZenodoHelper:
         return r.json()
 
     def get_record_id_from_zid(self, zenodo_id):
-        """
+        """Get record from Zenodo ID.
+
         zenodo_id is in the form zenodo.1234567
         record id is 1234567
         """
@@ -253,7 +254,8 @@ class ZenodoHelper:
             file_id = file["id"]
             r = requests.delete(
                 self.zenodo_endpoint
-                + f"/api/deposit/depositions/{new_deposition_id}/files/{file_id}",
+                + "/api/deposit/depositions/"
+                + f"{new_deposition_id}/files/{file_id}",
                 headers={"Authorization": f"Bearer {access_token}"},
             )
             if r.status_code != 204:
@@ -288,9 +290,9 @@ class ZenodoHelper:
             "/api/records/?q="
             "keywords:(/Boutiques/) AND "
             "keywords:(/schema.*/) AND keywords:(/version.*/)"
-            "%s"
+            f"{query_line}"
             "&file_type=json&type=software&"
-            "page=1&size=%s" % (query_line, 9999)
+            "page=1&size=9999"
         )
         r = requests.get(get_request)
         if r.status_code != 200:

@@ -9,13 +9,13 @@ import simplejson as json
 from jsonschema import ValidationError
 from tabulate import tabulate
 
-from boutiques.boshParsers import *
+from boutiques.boshParsers import parser_bosh
 from boutiques.dataHandler import DataHandlerError
 from boutiques.exporter import ExportError
 from boutiques.importer import ImportError
 from boutiques.invocationSchemaHandler import InvocationValidationError
 from boutiques.localExec import ExecutorError, ExecutorOutput, addDefaultValues
-from boutiques.logger import print_error, print_info, raise_error
+from boutiques.logger import print_info, raise_error
 from boutiques.nexusHelper import NexusError
 from boutiques.publisher import ZenodoError
 from boutiques.util.utils import (
@@ -83,7 +83,7 @@ def execute(*params):
     try:
         # Try to parse input with argparse
         results, _ = parser.parse_known_args(params)
-    except SystemExit as e:
+    except SystemExit:
         print_info(execute.__doc__)
         raise_error(ExecutorError, "Incorrect usage of 'bosh exec'")
 
@@ -102,7 +102,7 @@ def execute(*params):
         arguments = [descriptor, "-i", inp]
         if results.sandbox:
             arguments.append("--sandbox")
-        valid = invocation(*arguments)
+        _ = invocation(*arguments)
 
         # Generate object that will perform the commands
         from boutiques.localExec import LocalExecutor
@@ -140,7 +140,7 @@ def execute(*params):
             arguments.append(inp)
         if results.sandbox:
             arguments.append("--sandbox")
-        valid = invocation(*arguments)
+        _ = invocation(*arguments)
 
         # Generate object that will perform the commands
         from boutiques.localExec import LocalExecutor
@@ -197,7 +197,7 @@ def execute(*params):
         arguments = [descriptor]
         if results.sandbox:
             arguments.append("--sandbox")
-        valid = invocation(*arguments)
+        _ = invocation(*arguments)
 
         # Generate object that will perform the commands
         from boutiques.localExec import LocalExecutor
@@ -417,7 +417,7 @@ def example(*params):
     arguments = [descriptor]
     if results.sandbox:
         arguments.append("--sandbox")
-    valid = invocation(*arguments)
+    _ = invocation(*arguments)
 
     # Generate object that will perform the commands
     from boutiques.localExec import LocalExecutor
@@ -457,7 +457,7 @@ def data(*params):
     try:
         # Try to parse input with argparse
         results, _ = parser.parse_known_args(params)
-    except SystemExit as e:
+    except SystemExit:
         print_info(data.__doc__)
         raise_error(DataHandlerError, "Incorrect usage of 'bosh data'")
 

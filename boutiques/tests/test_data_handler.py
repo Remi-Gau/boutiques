@@ -2,14 +2,22 @@
 
 import os
 import shutil
-import sys
-from unittest import mock, skipIf
+from unittest import mock
 
 import pytest
-from boutiques_mocks import *
+from boutiques_mocks import (
+    mock_empty_function,
+    mock_get_data_cache,
+    mock_get_data_cache_file,
+    mock_get_empty_nexus_credentials,
+    mock_get_invalid_nexus_endpoint,
+    mock_get_publish_bulk,
+    mock_get_publish_single,
+    mock_post_publish_bulk,
+    mock_post_publish_single,
+)
 
 import boutiques
-from boutiques import __file__ as bfile
 from boutiques.bosh import bosh
 from boutiques.nexusHelper import NexusError
 from boutiques.tests.BaseTest import BaseTest

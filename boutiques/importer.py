@@ -5,7 +5,6 @@ import os
 import os.path as op
 import re
 import sys
-from argparse import ArgumentParser
 from importlib.machinery import SourceFileLoader
 
 import simplejson as json
@@ -41,7 +40,8 @@ class Importer:
         self.output_invocation = output_invocation
 
     def upgrade_04(self):
-        """
+        """Uprage from version 04.
+
          Differences between 0.4 and current (0.5):
            -schema version (obv)
            -singularity should now be represented same as docker
@@ -295,7 +295,7 @@ class Importer:
                     )
                 cwl_type = cwl_type["items"]
                 bout_input["list"] = True
-            if type(cwl_type) != str:
+            if not isinstance(cwl_type, str):
                 raise_error(ImportError, f"Unknown type: {str(cwl_type)}")
             boutiques_type = boutiques_types[
                 cwl_type.replace("[]", "").replace("?", "")
@@ -430,7 +430,7 @@ class Importer:
                 if req.get("ramMin"):
                     suggested_resources["ram"] = req["ramMin"]
                 if req.get("coresMin"):
-                    suggeseted_resources["cpu-cores"] = req["coresMin"]
+                    suggested_resources["cpu-cores"] = req["coresMin"]
                 bout_desc["suggested-resources"] = suggested_resources
                 return
             if req_type == "InitialWorkDirRequirement":
@@ -832,7 +832,10 @@ class Docopt_Importer:
                     list_arg = Argument(list_name)
                     list_arg.parse(list_name)
                     self.all_desc_and_type[list_name] = {
-                        "desc": f"List of {self._getParamName(arg.children[0].name)}"
+                        "desc": (
+                            "List of "
+                            f"{self._getParamName(arg.children[0].name)}"
+                        )
                     }
                     self._addArgumentToDependencies(
                         list_arg, ancestors=ancestors, isList=True
@@ -966,7 +969,7 @@ class Docopt_Importer:
         # Add mutex choice group arg to dependency tree
         # group_arg contains members as dependency arguments
         options = arg.children[0].children
-        p_node = self._getDependencyParentNode(ancestors)
+        _ = self._getDependencyParentNode(ancestors)
         members = [
             self._generateDependencyArgument(option) for option in options
         ]
@@ -1050,7 +1053,6 @@ class Docopt_Importer:
         if "inputs" not in self.descriptor:
             self.descriptor["inputs"] = []
 
-        param_key = arg["id"]
         param_name = arg["name"]
         new_inp = {
             "id": param_name.replace("-", "_"),
@@ -1090,7 +1092,7 @@ class Docopt_Importer:
     def _addMutexGroup(self, arg_names):
         # Add mutex group to descriptor
         pretty_name = "_".join([self._getParamName(name) for name in arg_names])
-        unique_name = self._getUniqueId(pretty_name)
+        _ = self._getUniqueId(pretty_name)
         new_group = {
             "id": pretty_name,
             "name": "Mutex group with members: {}".format(
@@ -1146,7 +1148,7 @@ class Docopt_Importer:
                 self.dependencies[root_inp]["name"].replace("-", "_")
             )
         pretty_name = "_".join(OIR_ids)
-        unique_name = self._getUniqueId(pretty_name)
+        _ = self._getUniqueId(pretty_name)
         new_group = {
             "id": pretty_name,
             "name": f"One is required group with members: {', '.join(OIR_ids)}",
